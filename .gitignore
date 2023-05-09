@@ -4,3 +4,8 @@ Lib/
 Scripts/
 pyvenv.cfg
 
+# memory images for testing
+mem_images/
+
+# __pycache__ (.pyc)
+**/__pycache__/
