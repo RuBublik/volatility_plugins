@@ -11,3 +11,16 @@ Note that some legitimate reasons exist for a process to be unlinked from the pr
 Currently, this plugin only supports comparing the *psActiveProcessList* to pool tag carving of *_EProcess* structures from memory, performed by *`windows.psscan.PsScan`*. 
 
 More comparison methods may be added in the future.
+
+Usage
+---------
+
+**'only-susp'**
+
+by default, this plugin includes all processes found in the image, ommits relatively little info, and mentions weather the process exists in the *psActiveProcessList* or not.
+
+with **'only-susp'** option enabled, the plugin will will display only  processes potentially unlinked from *psActiveProcessList* and with greater verbosity.
+
+**'physical'**
+
+additionally, this plugin also supports `pslist` / `psscan` option **'physical'**, which displays physical offset instead of virtual.
