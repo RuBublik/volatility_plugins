@@ -1,0 +1,1 @@
+- add check of process state. exclude exited processes, since they it is a legitimate reason for being unlinked from psActiveProcessList.
