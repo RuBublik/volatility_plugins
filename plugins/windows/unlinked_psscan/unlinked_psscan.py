@@ -15,7 +15,7 @@ from volatility3.plugins.windows import pslist, psscan
 vollog = logging.getLogger(__name__)
 
 
-class UnlinkedProcessScanner(interfaces.plugins.PluginInterface):
+class Unlinked_PsScan(interfaces.plugins.PluginInterface):
     """
     Scans for processes unlinked from psActiveProcessList.
     """
