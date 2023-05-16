@@ -1,4 +1,4 @@
-# unlikned_psscan
+# unlinked_psscan
 
 The ***`unlinked_psscan`*** is a windows volatility plugin, designed to identify potentially suspicious processes that have been unlinked from the *psActiveProcessList*, which is a doubly linked list of all active processes in the system pointed by the *kdbg structure*. If a process is unlinked from this list, it may indicate malicious activity, such as an attempt to hide from system monitoring tools.
 
