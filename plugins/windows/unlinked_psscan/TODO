@@ -1,3 +1,1 @@
 - add check of process state. exclude exited processes, since they it is a legitimate reason for being unlinked from psActiveProcessList.
-- deficient logic of error handling utility functions. need to add some logic to really skip some methods of inspection in case of exception.
-currently, exception in them leads to unexpected behaviours.

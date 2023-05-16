@@ -105,14 +105,18 @@ greater verbosity",
                 filter_func=pslist.PsList.create_pid_filter(pid_list=[4,])
             ))
             system_process_handle_table = system_process.ObjectTable
-        except StopIteration as e:
-            vollog.info(
-                f"Could not find system process (pid 4) in process list. - Skipping handles check."
-            )
-        except exceptions.InvalidAddressException:
-            vollog.log(
-                f"Could not access system process (pid 4) _EPROCESS.ObjectType. - Skipping handles check."
-            )
+        except (StopIteration, exceptions.InvalidAddressException) as exc:
+            if (isinstance(exc, StopIteration)):    
+                vollog.info(
+                    f"Could not find system process (pid 4) in process list. - Skipping handles check."
+                )
+            elif (isinstance(exc, exceptions.InvalidAddressException)):
+                vollog.log(
+                    f"Could not access system process (pid 4) _EPROCESS.ObjectType. - Skipping handles check."
+                )
+            
+            # returning empty list (evaluates to boolean false)
+            return pids_list
         
         # preparing windows.handles.Handles plugin for enumerating previously acquired 
         # handle table of system process.
@@ -155,6 +159,7 @@ greater verbosity",
             _layer_name=kernel.layer_name,
             _symbol_table=kernel.symbol_table_name,
         )
+        
         # 2) extracting pids of handles to processes (_EProcess structures) from system.exe process (pid 4)
         systemProcHandleList_pids   = self.get_known_pids_systemProcessHandles(
             _context=self.context,
@@ -177,6 +182,11 @@ greater verbosity",
             in_systemProcessHandles = True
             
             # COMPARISON METHODS:
+            # ** note: when some of the comaprison methods can not be evaluated due to an 
+            # * exception in the process of its acquiring, it is reflected only when
+            # * displaying all process [not using --only-susp option].
+            # * the plugin does not count it as "legitimate" when a certain method could 
+            # * not be evaluated.
             # -
             # 1) validation with psActiveProcessList by PID
             if not proc.UniqueProcessId in psActiveProcessList_pids:
@@ -186,10 +196,6 @@ greater verbosity",
             if not proc.UniqueProcessId in systemProcHandleList_pids:
                 in_systemProcessHandles = False
             
-            # so, is the process suspicious?
-            process_is_kinda_susp = not in_psActiveProcessList or \
-                                    not in_systemProcessHandles
-
             # BEFORE YIELDING NEXT ITERRABLE:
             # -
             # option- offset correction
@@ -202,6 +208,10 @@ greater verbosity",
 
             try:
                 if self.config["only_susp"]:
+                    
+                    # so, is the process suspicious?
+                    process_is_kinda_susp = not in_psActiveProcessList or \
+                                            not in_systemProcessHandles
                     if process_is_kinda_susp:
                         yield (
                             0,
@@ -212,7 +222,7 @@ greater verbosity",
                                     "string",
                                     max_length=proc.ImageFileName.vol.count,
                                     errors="replace",
-                                ),
+                                ).ljust(14, ' '),
                                 format_hints.Hex(offset),
                                 proc.ActiveThreads,
                                 proc.get_handle_count(),
@@ -231,10 +241,10 @@ greater verbosity",
                                 "string",
                                 max_length=proc.ImageFileName.vol.count,
                                 errors="replace",
-                            ),
+                            ).ljust(14, ' '),
                             format_hints.Hex(offset),
-                            in_psActiveProcessList,
-                            in_systemProcessHandles,
+                            "[ - ]" if not len(psActiveProcessList_pids) else ( "[ V ]" if in_psActiveProcessList else "[ X ]" ),
+                            "[ - ]" if not len(systemProcHandleList_pids) else ( "[ V ]" if in_systemProcessHandles else "[ X ]" ),
                         ),
                     )
             except exceptions.InvalidAddressException:
@@ -266,8 +276,8 @@ greater verbosity",
                     ("PID", int),
                     ("ImageFileName", str),
                     (f"Offset{offsettype}", format_hints.Hex),
-                    ("InpsActiveProcessList", bool),
-                    ("inSystemProcessHandles", bool),
+                    ("InpsActiveProcessList", str),
+                    ("inSystemProcessHandles", str),
                 ],
                 self._generator(),
         )
