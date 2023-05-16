@@ -1,6 +1,6 @@
 # unlinked_psscan
 
-The ***`unlinked_psscan`*** is a windows volatility plugin, designed to identify potentially suspicious processes that have been unlinked from the *psActiveProcessList*, which is a doubly linked list of all active processes in the system pointed by the *kdbg structure*. If a process is unlinked from this list, it may indicate malicious activity, such as an attempt to hide from system monitoring tools.
+The ***`unlinked_psscan`*** is a windows volatility plugin, designed to identify potentially suspicious processes that have been unlinked from various structures - which might indicate malicious activity, such as  achieving defense evasion. in other words, an attempt to hide from system monitoring tools.
 
 The purpose of this plugin is to be the volatility3 equivalent of volatility2 psxview. It compares the psActiveProcessList to various other ways of enumerating processes in memory to find any unlinked processes. Such processes are then reported as potentially suspicious. If required, their memory could be dumped using the *`procdump`* plugin, for instance.
 
@@ -8,7 +8,9 @@ Note that some legitimate reasons exist for a process to be unlinked from the pr
 
 **Note:**
 
-Currently, this plugin only supports comparing the *psActiveProcessList* to pool tag carving of *_EProcess* structures from memory, performed by *`windows.psscan.PsScan`*. 
+Currently, this plugin supports comparing the processes discovered by performing pool tag carving of *_EProcess* structures (by using *`windows.psscan.PsScan`*), to:
+* *psActiveProcessList* - a doubly linked list of *_EProcess* structures pointed by the *kdbg structure*.
+* handle table of system process - the system process holds in its handle table the handles to all processes, except for its processes (created by the kernel during startup)
 
 More comparison methods may be added in the future.
 
