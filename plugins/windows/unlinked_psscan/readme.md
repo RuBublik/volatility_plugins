@@ -10,7 +10,7 @@ Note that some legitimate reasons exist for a process to be unlinked from the pr
 
 Currently, this plugin supports comparing the processes discovered by performing pool tag carving of *_EProcess* structures (by using *`windows.psscan.PsScan`*), to:
 * *psActiveProcessList* - a doubly linked list of *_EProcess* structures pointed by the *kdbg structure*.
-* handle table of system process - the system process holds in its handle table the handles to all processes, except for its processes (created by the kernel during startup)
+* handle table of system process - the system process holds in its handle table the handles to all processes, except for its parent processes (created by the kernel during startup)
 
 More comparison methods may be added in the future.
 
